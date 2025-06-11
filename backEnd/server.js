@@ -2,10 +2,25 @@ const express = require('express');
 const mysql = require('mysql');
 const cors = require('cors');
 const bcrypt = require('bcrypt');
+const session = require('express-session');
 
 const App = express();
 App.use(express.json())
-App.use(cors())
+App.use(cors({
+    origin: 'http://localhost:5173',
+    credentials: true,
+}))
+
+App.use(session({
+    secret:'my-secret',
+    resave:false,
+    saveUninitialized: false,
+    cookie:{
+        httpOnly:true,
+        secure:false,
+        sameSite:'lax'
+    }
+}))
 
 const db = mysql.createConnection({
     host: "localhost",
@@ -39,7 +54,7 @@ App.post('/', (req,res) => {
 App.post('/register', async (req, res) => {
   const { first_name, last_name, email, password } = req.body;
 
-    const hashedPassword = await bcrypt.hash(password, 10); // 10 = salt rounds
+    const hashedPassword = await bcrypt.hash(password, 10); 
 
     const sql = "INSERT INTO USER_TABLE (first_name, last_name, email, pass) VALUES(?,?,?,?)";
     db.query(sql, [first_name, last_name, email, hashedPassword], (err, result) => {
@@ -50,8 +65,34 @@ App.post('/register', async (req, res) => {
     });
 });
 
+App.post('/logout',(req,res) =>{
+    req.session.destroy(err => {
+        if(err){
+            return res.status(500).json({message: "Logout Failed"})
+        }
+        res.json({message: "Logout Success"})
+    })
+})
+
+App.post('/add-new-project', (req,res) => {
+
+    const {project_name, company} = req.body
+
+    const sql = "INSERT INTO PROJECT_TABLE (project_name,company) VALUES(?,?)";
+
+    db.query(sql,[project_name,company],(err,result) => {
+        if(err){
+            console.log("Insertion Error", err);
+            return res.status(500)
+        }
+        return res.status(200).json({
+            message: "Project added successfully",
+        })
+    })
+})
+
 App.get('/home', (req,res) => {
-    const sql = "SELECT * FROM project_table pt JOIN event_table et ON pt.project_id = et.project_id ";
+    const sql = "SELECT * FROM project_table  ";
 
     db.query(sql,(err,result) => {
         if(err){
@@ -63,5 +104,5 @@ App.get('/home', (req,res) => {
 
    
 App.listen(8081,() => {
-    console.log("Listening")
+    console.log("Listening in 8081")
 })
