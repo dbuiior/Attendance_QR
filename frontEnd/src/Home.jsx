@@ -195,18 +195,7 @@ const Home = () => {
                               </span>
                             </td>
                             <td className="text-center">
-                              {item.qr_link ? (
-                                <a 
-                                  href={item.qr_link} 
-                                  className="btn btn-sm btn-outline-primary"
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                >
-                                  <i className="fas fa-external-link-alt me-1"></i>
-                                  View Meeting List
-                                </a>
-                              ) : <button className='btn btn-primary px-3 py-1 fw-semibold shadow rounded-pill border-0'>View Meeting Details</button>
-                              }
+                              <button className='btn btn-primary' onClick={() => navigate(`/view-meeting/${item.project_id}`)}>View Meeting List</button>
                             </td>
                           </tr>
                         ))}

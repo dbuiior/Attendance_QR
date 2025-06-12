@@ -7,6 +7,7 @@ import Register from './Register.jsx'
 import Home from './Home.jsx'
 import AddProject from './AddProject.jsx';
 import ViewMeeting from './ViewMeeting.jsx';
+import AddMeeting from  './AddMeeting.jsx'
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
@@ -16,7 +17,8 @@ createRoot(document.getElementById('root')).render(
         <Route path="/register" element={<Register />} />
         <Route path="/home" element={<Home />}/>
         <Route path="/add-new-project" element={<AddProject />} />
-        <Route path="/view-meeting" element={<ViewMeeting />} />
+        <Route path="/view-meeting/:project_id" element={<ViewMeeting />} />
+        <Route path="/add-new-meeting" element={<AddMeeting />} />        
       </Routes>
     </BrowserRouter>
   </StrictMode>

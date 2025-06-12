@@ -102,6 +102,33 @@ App.get('/home', (req,res) => {
     })
 })
 
+App.get('/view-meeting/:project_id', (req, res) => {
+    const project_id = req.params.project_id;
+
+    const sql = "SELECT * FROM event_table et JOIN project_table pt ON et.project_id = pt.project_id WHERE et.project_id = ?"
+
+    db.query(sql,[project_id],(err,result) => {
+        if(err){
+            return res.status(500).json({message: "Error"})
+        }
+        return res.json(result)
+    })
+})
+
+App.post('/add-new-meeting', (req,res) => {
+
+    const {title, qr_link} = req.body;
+
+    const sql = "INSERT INTO event_table (title, qr_link) VALUES(?,?)"
+
+    db.query(sql,{title,qr_link},(err,result) => {
+        if(err){
+            return res.status(500).json({message: 'error'})
+        }
+        return res.json(result)
+    })
+})
+
    
 App.listen(8081,() => {
     console.log("Listening in 8081")
