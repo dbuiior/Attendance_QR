@@ -74,13 +74,14 @@ App.post('/logout',(req,res) =>{
     })
 })
 
+
 App.post('/add-new-project', (req,res) => {
 
-    const {project_name, company} = req.body
+    const {project_name, company, entity} = req.body
 
-    const sql = "INSERT INTO PROJECT_TABLE (project_name,company) VALUES(?,?)";
+    const sql = "INSERT INTO PROJECT_TABLE (project_name,company,entity) VALUES(?,?,?)";
 
-    db.query(sql,[project_name,company],(err,result) => {
+    db.query(sql,[project_name,company,entity],(err,result) => {
         if(err){
             console.log("Insertion Error", err);
             return res.status(500)
@@ -115,19 +116,36 @@ App.get('/view-meeting/:project_id', (req, res) => {
     })
 })
 
-App.post('/add-new-meeting', (req,res) => {
+App.put('/edit-profile/:user_id', (req,res) => {
+    const {user_id} = req.params()
 
-    const {title, qr_link} = req.body;
+    const {first_name, last_name, email,} = req.body
 
-    const sql = "INSERT INTO event_table (title, qr_link) VALUES(?,?)"
+    const sql = "UPDATE user_table SET first_name = ?, last_name = ?, email = ? WHERE user_id = ?"
 
-    db.query(sql,{title,qr_link},(err,result) => {
+    db.query(sql,[first_name, last_name, email], (err, res) => {
         if(err){
-            return res.status(500).json({message: 'error'})
+            console.error("Error Updating Profile")
+            return res.status(500).json({message: 'Failed to update profile'})
         }
-        return res.json(result)
+        return res.status(200).json({message: 'Successfully update profile'})
     })
 })
+
+
+App.post('/add-new-meeting/:project_id', (req,res) => {
+    const { project_id } = req.params;
+    const { title, start_date } = req.body;
+
+    const sql = "INSERT INTO event_table (project_id, title, start_date) VALUES(?, ?, ?)";
+
+    db.query(sql, [project_id, title, start_date], (err, result) => {
+        if (err) {
+            return res.status(500).json({ message: 'error' });
+        }
+        return res.status(200).json({ message: 'Meeting created' });
+    });
+});
 
    
 App.listen(8081,() => {

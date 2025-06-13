@@ -7,7 +7,8 @@ import Register from './Register.jsx'
 import Home from './Home.jsx'
 import AddProject from './AddProject.jsx';
 import ViewMeeting from './ViewMeeting.jsx';
-import AddMeeting from  './AddMeeting.jsx'
+import AddMeeting from  './AddMeeting.jsx';
+import EditProfile from './EditProfile.jsx';
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
@@ -18,7 +19,8 @@ createRoot(document.getElementById('root')).render(
         <Route path="/home" element={<Home />}/>
         <Route path="/add-new-project" element={<AddProject />} />
         <Route path="/view-meeting/:project_id" element={<ViewMeeting />} />
-        <Route path="/add-new-meeting" element={<AddMeeting />} />        
+        <Route path="/add-new-meeting/:project_id" element={<AddMeeting />} />     
+        <Route path="/edit-profile/:user_id" element={<EditProfile />} />        
       </Routes>
     </BrowserRouter>
   </StrictMode>

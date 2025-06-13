@@ -1,17 +1,17 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
-import { Plus, Building2, FolderPlus } from 'lucide-react';
+import { useNavigate, useParams } from 'react-router-dom';
+import { Plus, Building2, FolderPlus, CalendarDays } from 'lucide-react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 const AddMeeting = () => {
-
+    const {project_id} = useParams();
     const navigate = useNavigate();
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [isSuccess, setIsSucess] = useState(false);
     const [formData, setFormData] = useState({
         title:'',
-        qr_link: ''
+        start_date:'',
     });
 
     const handleChange = (e) => {
@@ -24,11 +24,16 @@ const AddMeeting = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setIsSubmitting(true);
         try{
-            await axios.post('http://localhost:8081/add-new-meeting')
+            await axios.post(`http://localhost:8081/add-new-meeting/${project_id}`,{
+                title: formData.title,
+                start_date: formData.start_date
+            })
+            
             setIsSucess(true)
             setTimeout(() => navigate(-1),2000) 
-        }catch{
+        }catch (error){
             console.error('Error adding meeting: ', error)
             alert('Failed to add new meeting')
         }
@@ -51,7 +56,7 @@ const AddMeeting = () => {
              <FolderPlus size={32} className="mb-2 text-primary" />
              <h4 className="fw-bold">Add New Meeting</h4>
            </div>
-           <form>
+           <form onSubmit={handleSubmit}>
              <div className="mb-3">
                <label htmlFor="project_name" className="form-label">
                  <FolderPlus size={16} className="me-1" />
@@ -60,38 +65,37 @@ const AddMeeting = () => {
                <input
                  type="text"
                  className="form-control border border-3"
-                 placeholder='Enter Project Name'
-                 id="project_name"
-                 name="project_name"
-                //  value={formData.project_name}
-                //  onChange={handleChange}
+                 placeholder='Enter Meeting Title'
+                 id="title"
+                 name="title"
+                 value={formData.title}
+                 onChange={handleChange}
                  required
                />
              </div>
-             <div className="mb-3">
-               <label htmlFor="company" className="form-label">
-                 <Building2 size={16} className="me-1" />
-                 QR_Link
+              <div className="mb-3">
+               <label htmlFor="start_date" className="form-label">
+                 <CalendarDays size={16} className="me-1" />
+                 Start Date
                </label>
                <input
-                 type="text"
+                 type="date"
                  className="form-control border border-3"
-                 placeholder='Enter Company Name'
-                 id="company"
-                 name="company"
-                //  value={formData.company}
-                //  onChange={handleChange}
+                 placeholder='Starting Date'
+                 id="start_date"
+                 name="start_date"
+                 value={formData.start_date}
+                 onChange={handleChange}
                  required
                />
              </div>
              <button type="submit" className="btn btn-primary w-100">
-               {/* {isSubmitting ? (
+               {isSubmitting ? (
                  <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
                ) : (
                  <Plus size={16} className="me-2" />
                )}
-               {isSubmitting ? 'Creating...' : 'Create Project'} */}
-               Submit Gaming
+               {isSubmitting ? 'Creating...' : 'Create Project'}
              </button>
            </form>
          </div>

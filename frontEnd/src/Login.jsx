@@ -10,6 +10,8 @@ const Login = () => {
     const navigate =  useNavigate();
     const [logoutMessage, setLogoutMessage] = useState('');
     const [loginMessage, setLoginMessage] = useState('');
+    
+    
 
     useEffect(() => {
       const message = localStorage.getItem('logoutMessage')
@@ -37,6 +39,8 @@ const Login = () => {
               console.log(res.data);
               if(res.data.message === 'Login Success'){
                 localStorage.setItem('first_name',res.data.first_name)
+                localStorage.setItem('user_id',res.data.user_id)
+                // console.log('User id berhasil didapatkan')
                 navigate('/home')
               }
               else{

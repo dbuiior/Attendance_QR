@@ -11,6 +11,7 @@ const Home = () => {
   const [loginMessage, setLoginMessage] = useState('');
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
+  const user_id = localStorage.getItem('user_id')
 
   useEffect(() => {
     const name = localStorage.getItem('first_name');
@@ -84,7 +85,7 @@ const Home = () => {
               >
                 <i className="fas fa-sign-out-alt me-1"></i>Logout
               </button>
-              <button className='btn btn-outline-light btn-sm'>
+              <button className='btn btn-outline-light btn-sm' onClick={() => navigate(`/edit-profile/${user_id}`)}>
                 <i>Edit Profile</i>
               </button>
             </div>
@@ -137,7 +138,7 @@ const Home = () => {
                     </h5>
                   </div>
                   <div className="col-auto">
-                    <span className="badge bg-primary">{project.length} Projects</span>
+                    <span className="card p-3 text-white bg-primary">Total : {project.length} Projects</span>
                   </div>
                 </div>
               </div>
@@ -168,8 +169,11 @@ const Home = () => {
                           <th scope="col">
                             <i className="fas fa-building me-2"></i>Company
                           </th>
+                          <th scope="col">
+                            <i className="fa fa-id-badge me-2"></i>Entity
+                          </th>
                           <th scope="col" className="text-center">
-                            <i className="fas fa-qrcode me-2"></i>Meeting List
+                            <i className="fas fa-qrcode me-2"></i>Event List
                           </th>
                         </tr>
                       </thead>
@@ -192,6 +196,11 @@ const Home = () => {
                             <td>
                               <span className="badge bg-secondary bg-opacity-20">
                                 {item.company}
+                              </span>
+                            </td>
+                            <td>
+                              <span className="badge bg-success bg-opacity-20">
+                                {item.entity}
                               </span>
                             </td>
                             <td className="text-center">

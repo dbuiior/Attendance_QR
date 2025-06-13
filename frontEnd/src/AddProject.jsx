@@ -1,14 +1,15 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import { Plus, Building2, FolderPlus } from 'lucide-react';
+import { Plus, Building2, FolderPlus, IdCardLanyard } from 'lucide-react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 const AddProject = () => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     project_name: '',
-    company: ''
+    company: '',
+    entity: ''
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -72,8 +73,7 @@ const AddProject = () => {
               onChange={handleChange}
               required
             />
-          </div>
-          <div className="mb-3">
+          </div><div className="mb-3">
             <label htmlFor="company" className="form-label">
               <Building2 size={16} className="me-1" />
               Company
@@ -81,13 +81,34 @@ const AddProject = () => {
             <input
               type="text"
               className="form-control border border-3"
-              placeholder='Enter Company Name'
+              placeholder="Enter Company Name"
               id="company"
               name="company"
               value={formData.company}
               onChange={handleChange}
               required
             />
+          </div>
+          <div className="mb-3">
+            <label htmlFor="entity" className="form-label">
+              <IdCardLanyard size={16} className="me-1" />
+              Entity
+            </label>
+            <select
+              className="form-select border border-3"
+              id="entity"
+              name="entity"
+              value={formData.entity || ""}
+              onChange={handleChange}
+              required
+            >
+              <option value="" disabled>
+                Select Entity
+              </option>
+              <option value="Erendi Digital Labs">Erendi Digital Labs</option>
+              <option value="Asia Global Solusi">Asia Global Solusi</option>
+              <option value="Bima Maju Teknologi">Bima Maju Teknologi</option>
+            </select>
           </div>
           <button type="submit" className="btn btn-primary w-100" disabled={isSubmitting}>
             {isSubmitting ? (
