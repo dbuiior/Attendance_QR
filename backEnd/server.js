@@ -147,6 +147,42 @@ App.post('/add-new-meeting/:project_id', (req,res) => {
     });
 });
 
+App.post("/submit-attendance", (req, res) => {
+  const { event_id, attendee_name, attendee_position, attendance_time } = req.body;
+
+  if (!event_id || !attendee_name || !attendee_position || !attendance_time) {
+    return res.status(400).json({ error: "Missing required fields" });
+  }
+
+  const sql = `INSERT INTO attendance_table (event_id, attendee_name, attendee_position, attendance_time) VALUES (?, ?, ?, NOW())`;
+
+  db.query(sql, [event_id, attendee_name, attendee_position, attendance_time], (err, result) => {
+    if (err) {
+      console.error("Insert Error:", err);
+      return res.status(500).json({ error: "Database insert failed" });
+    }
+    res.status(200).json({ message: "Attendance submitted successfully" });
+  });
+});
+
+App.get("/get-event-details/:event_id", (req, res) => {
+  const eventId = req.params.event_id;
+
+  const query = "SELECT title, start_date FROM event_table WHERE event_id = ?";
+  db.query(query, [eventId], (err, results) => {
+    if (err) {
+      console.error("Error fetching event details:", err);
+      return res.status(500).json({ error: "Database error" });
+    }
+
+    if (results.length === 0) {
+      return res.status(404).json({ error: "Event not found" });
+    }
+
+    res.json(results[0]);
+  });
+});
+
    
 App.listen(8081,() => {
     console.log("Listening in 8081")

@@ -1,53 +1,72 @@
-import React, { useEffect, useState } from 'react';
-import axios from 'axios';
-import { useParams, useNavigate } from 'react-router-dom';
-import 'bootstrap/dist/css/bootstrap.min.css';
-import '@fortawesome/fontawesome-free/css/all.min.css';
+import React, { useEffect, useState } from "react";
+import axios from "axios";
+import { useParams, useNavigate } from "react-router-dom";
+import "bootstrap/dist/css/bootstrap.min.css";
+import "@fortawesome/fontawesome-free/css/all.min.css";
+import QRCode from "react-qr-code";
 
 const ViewSimpleMeeting = () => {
   const [meetings, setMeetings] = useState([]);
   const { project_id } = useParams();
   const navigate = useNavigate();
+  const [qrInfo, setQrInfo] = useState(null);
+  const [showModal, setShowModal] = useState(false);
 
   const styles = {
     container: {
-      minHeight: '100vh',
-      background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-      fontFamily: 'Arial, sans-serif'
+      minHeight: "100vh",
+      background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+      fontFamily: "Arial, sans-serif",
     },
     addButton: {
-      background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-      color: 'white',
-      border: 'none',
-      padding: '12px 24px',
-      borderRadius: '12px',
-      display: 'flex',
-      alignItems: 'center',
-      gap: '8px',
-      fontWeight: 'bold',
-      cursor: 'pointer',
-      transition: 'all 0.3s',
-      boxShadow: '0 4px 15px rgba(102, 126, 234, 0.3)'
-    }
+      background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+      color: "white",
+      border: "none",
+      padding: "12px 24px",
+      borderRadius: "12px",
+      display: "flex",
+      alignItems: "center",
+      gap: "8px",
+      fontWeight: "bold",
+      cursor: "pointer",
+      transition: "all 0.3s",
+      boxShadow: "0 4px 15px rgba(102, 126, 234, 0.3)",
+    },
   };
 
-  const handleDelete = () => {
-
-  }
+  const handleDelete = () => {};
 
   useEffect(() => {
-    axios.get(`http://localhost:8081/view-meeting/${project_id}`)
-      .then(response => setMeetings(response.data))
-      .catch(error => console.error('Error fetching meetings:', error));
+    axios
+      .get(`http://localhost:8081/view-meeting/${project_id}`)
+      .then((response) => setMeetings(response.data))
+      .catch((error) => console.error("Error fetching meetings:", error));
   }, [project_id]);
+
+  const handleShowQR = (pid, eid) => {
+    setQrInfo({ pid, eid });
+    setShowModal(true);
+  };
+
+  const handleCloseModal = () => {
+    setShowModal(false);
+    setQrInfo(null);
+  };
 
   return (
     <div style={styles.container}>
       <nav className="navbar navbar-expand-lg navbar-light bg-white shadow-sm px-4">
-        <button className="btn" style={styles.addButton} onClick={() => navigate(`/add-new-meeting/${project_id}`)}>
-            <i className="fas fa-plus me-2"></i>Add New Meeting
-          </button>
-        <button className="btn btn-outline-primary ms-auto" onClick={() => navigate(-1)}>
+        <button
+          className="btn"
+          style={styles.addButton}
+          onClick={() => navigate(`/add-new-meeting/${project_id}`)}
+        >
+          <i className="fas fa-plus me-2"></i>Add New Meeting
+        </button>
+        <button
+          className="btn btn-outline-primary ms-auto"
+          onClick={() => navigate(-1)}
+        >
           <i className="fas fa-arrow-left me-1"></i> Back
         </button>
       </nav>
@@ -87,23 +106,39 @@ const ViewSimpleMeeting = () => {
                       <tr key={index}>
                         <td className="text-capitalize">{meeting.title}</td>
                         <td>
-                            <span><i className="fas fa-link me-1"></i>{meeting.start_date}</span>
+                          <span>
+                            <i className="fas fa-link me-1"></i>
+                            {meeting.start_date}
+                          </span>
                         </td>
                         <td>
                           <div className="d-flex justify-content-center gap-2">
                             <button className="btn btn-outline-primary btn-sm">
                               <i className="fas fa-edit me-1"></i>Edit
                             </button>
-                              <button className="btn btn-outline-danger btn-sm" onClick={handleDelete}>
-                                <i className="fas fa-trash-alt me-1"></i>Delete
-                              </button>
+                            <button
+                              className="btn btn-outline-danger btn-sm"
+                              onClick={handleDelete}
+                            >
+                              <i className="fas fa-trash-alt me-1"></i>Delete
+                            </button>
+                            <button
+                              className="btn btn-outline-success btn-sm"
+                              onClick={() =>
+                                handleShowQR(project_id, meeting.event_id)
+                              }
+                            >
+                              <i className="fas fa-qrcode me-1"></i>QR
+                            </button>
                           </div>
                         </td>
                       </tr>
                     ))
                   ) : (
                     <tr>
-                      <td colSpan="3" className="text-muted py-4">No meetings found.</td>
+                      <td colSpan="3" className="text-muted py-4">
+                        No meetings found.
+                      </td>
                     </tr>
                   )}
                 </tbody>
@@ -111,8 +146,40 @@ const ViewSimpleMeeting = () => {
             </div>
           </div>
         </div>
-
       </div>
+
+      {/* ✅ QR Modal */}
+      {showModal && qrInfo && (
+        <div
+          className="modal show fade"
+          style={{ display: "block", backgroundColor: "rgba(0, 0, 0, 0.5)" }}
+          onClick={handleCloseModal}
+        >
+          <div
+            className="modal-dialog modal-dialog-centered"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="modal-content p-4">
+              <div className="modal-header">
+                <h5 className="modal-title">Scan to Join Meeting</h5>
+                <button
+                  type="button"
+                  className="btn-close"
+                  onClick={handleCloseModal}
+                ></button>
+              </div>
+              <div className="modal-body text-center">
+                <QRCode
+                  value={`http://localhost:5173/forms/${qrInfo.pid}/${qrInfo.eid}`}
+                />
+                <p className="mt-3 text-muted small">
+                  URL: /forms/{qrInfo.pid}/{qrInfo.eid}
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
