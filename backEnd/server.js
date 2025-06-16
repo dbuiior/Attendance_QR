@@ -183,6 +183,26 @@ App.get("/get-event-details/:event_id", (req, res) => {
   });
 });
 
+App.delete('/delete-meeting/:event_id', (req, res) => {
+  const { event_id } = req.params;
+  console.log("Event ID to delete:", event_id); // 👉 cek apakah masuk
+
+  const sql = "DELETE FROM event_table WHERE event_id = ?";
+  db.query(sql, [event_id], (err, result) => {
+    if (err) {
+      console.log("Query error:", err);
+      return res.status(500).json({ message: 'Failed to Delete Event' });
+    }
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ message: 'Event not found' });
+    }
+
+    return res.status(200).json({ message: 'Event deleted successfully' });
+  });
+});
+
+
    
 App.listen(8081,() => {
     console.log("Listening in 8081")

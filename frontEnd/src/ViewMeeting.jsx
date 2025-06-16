@@ -8,6 +8,7 @@ import QRCode from "react-qr-code";
 const ViewSimpleMeeting = () => {
   const [meetings, setMeetings] = useState([]);
   const { project_id } = useParams();
+  const { event_id } = useParams();
   const navigate = useNavigate();
   const [qrInfo, setQrInfo] = useState(null);
   const [showModal, setShowModal] = useState(false);
@@ -34,7 +35,19 @@ const ViewSimpleMeeting = () => {
     },
   };
 
-  const handleDelete = () => {};
+
+  const handleDelete = (event_id) => {
+    console.log("Deleting event with ID:", event_id ); 
+    axios.delete(`http://localhost:8081/delete-meeting/${event_id}`)
+    .then(() => {
+      alert('Event Delete Succesfully')
+      setMeetings(prev => prev.filter(meeting => meeting.event_id !== event_id));
+    })
+    .catch((error) => {
+      console.error('Error Deleting Event',error)
+      alert('Attendee Already Attend the Meeting')
+    })
+  };
 
   useEffect(() => {
     axios
@@ -118,7 +131,7 @@ const ViewSimpleMeeting = () => {
                             </button>
                             <button
                               className="btn btn-outline-danger btn-sm"
-                              onClick={handleDelete}
+                              onClick={()=> handleDelete(meeting.event_id)}
                             >
                               <i className="fas fa-trash-alt me-1"></i>Delete
                             </button>

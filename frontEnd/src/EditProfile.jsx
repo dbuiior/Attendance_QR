@@ -1,8 +1,6 @@
 import React from 'react'
 
 const EditProfile = () => {
-
-  
      const user_id = 1;
 
   return (
